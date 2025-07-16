@@ -31,7 +31,7 @@ class Post(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if self.slug == "" or self.slug == None:
+        if self.slug == "" or self.slug is None:
             self.slug = slugify(self.title)
         if should_feature_post(self):
             self.featured = True
@@ -62,6 +62,6 @@ class Post(models.Model):
 
 def should_feature_post(post):
     return (
-        post.draft == False
+        not post.draft
         and Post.objects.filter(featured=True, draft=False, user=post.user).count() == 0
     )

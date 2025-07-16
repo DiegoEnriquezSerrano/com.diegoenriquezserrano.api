@@ -1,7 +1,7 @@
-from .bookmark_factory import BookmarkFactory
-from .category_factory import CategoryFactory
-from .comment_factory import CommentFactory
-from .notification_factory import NotificationFactory
-from .post_factory import PostFactory
-from .profile_factory import ProfileFactory
-from .user_factory import UserFactory
+from .bookmark_factory import BookmarkFactory as BookmarkFactory
+from .category_factory import CategoryFactory as CategoryFactory
+from .comment_factory import CommentFactory as CommentFactory
+from .notification_factory import NotificationFactory as NotificationFactory
+from .post_factory import PostFactory as PostFactory
+from .profile_factory import ProfileFactory as ProfileFactory
+from .user_factory import UserFactory as UserFactory

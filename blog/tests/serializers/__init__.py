@@ -1,2 +1,2 @@
-from .category_serializer_test import *
-from .profile_serializer_test import *
+from .category_serializer_test import CategorySerializerTest as CategorySerializerTest
+from .profile_serializer_test import ProfileSerializerTest as ProfileSerializerTest

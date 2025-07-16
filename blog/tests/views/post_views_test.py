@@ -25,7 +25,6 @@ class AuthenticatedPostTests(APITestCase):
         self.assertEqual(response_json[0]["title"], post.title)
 
     def test_authenticated_user_can_create_post(self):
-        category = CategoryFactory(user=self.user)
         response = self.client.post(
             "/posts",
             {
@@ -118,7 +117,7 @@ class PostTests(APITestCase):
     def test_get_posts_by_user_path_empty_if_username_does_not_exist(self):
         user = UserFactory()
         category = CategoryFactory(user=user)
-        post = PostFactory.create(user=user, categories=[category])
+        PostFactory.create(user=user, categories=[category])
         response = self.client.get(f"/posts/{user.username}1234", format="json")
         response_json = json.loads(response.content)
 

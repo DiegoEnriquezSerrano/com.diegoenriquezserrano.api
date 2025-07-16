@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from blog.models import Category, User, Post
+from blog.models import Category
 from blog.tests.factories import PostFactory, UserFactory
 
 

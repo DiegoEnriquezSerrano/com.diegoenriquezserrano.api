@@ -41,16 +41,27 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           POSTGRES_USER: ${{ secrets.DATABASE_USERNAME }}
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.10.12
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run Tests
-      run: |
-        python manage.py test
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.12
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Tests
+        run: |
+          python manage.py test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install ruff
+        uses: astral-sh/ruff-action@v3
+      - name: Run linter
+        run: ruff check
+      - name: Run formatter
+        run: ruff format --check

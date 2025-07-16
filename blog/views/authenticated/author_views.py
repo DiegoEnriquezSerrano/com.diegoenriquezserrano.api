@@ -4,7 +4,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
 
 from rest_framework import generics
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 from blog.models import Post, Bookmark
@@ -20,10 +19,13 @@ class AuthorStatsAPIView(generics.ListAPIView):
         user = self.request.user
         posts = Post.objects.filter(user=user).count()
         likes = (
-            Post.objects.filter(user=user)
-            .annotate(Count("likes"))
-            .aggregate(Sum("likes__count"))["likes__count__sum"]
-        ) or 0
+            (
+                Post.objects.filter(user=user)
+                .annotate(Count("likes"))
+                .aggregate(Sum("likes__count"))["likes__count__sum"]
+            )
+            or 0
+        )
         bookmarks = Bookmark.objects.filter(user=user).count()
 
         return [{"posts": posts, "bookmarks": bookmarks, "likes": likes}]

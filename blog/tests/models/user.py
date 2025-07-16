@@ -1,15 +1,12 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 
 from blog.models.profile import Profile
-from blog.models.post import Post
 from blog.models.user import User
 
 from blog.tests.factories.post_factory import PostFactory
 
 
 class UserModelTests(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(
             email="testuser@example.com", username="testuser", password="testpassword"

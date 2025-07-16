@@ -1,11 +1,10 @@
 from django.test import TestCase
 
-from blog.models import Comment, Post, User
+from blog.models import Comment
 from blog.tests.factories import UserFactory, PostFactory
 
 
 class CommentModelTests(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.post = PostFactory(user=self.user)

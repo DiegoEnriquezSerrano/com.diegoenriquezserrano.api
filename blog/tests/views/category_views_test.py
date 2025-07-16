@@ -17,7 +17,7 @@ class CategoryTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            Category.objects.get(slug=response.data[0]["slug"], user__id=user.id).name,
+            Category.objects.get(slug=response_json[0]["slug"], user__id=user.id).name,
             category.name,
         )
 
@@ -52,11 +52,12 @@ class CategoryTests(APITestCase):
 
     def test_get_categories_by_user_path_empty_list_if_username_does_not_exist(self):
         user = UserFactory()
-        category = CategoryFactory(user=user)
+        CategoryFactory(user=user)
         response = self.client.get(f"/categories/{user.username}1234", format="json")
         response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_json, [])
 
     def test_get_category_detail_path_not_found_if_username_does_not_exist(self):
         user = UserFactory()

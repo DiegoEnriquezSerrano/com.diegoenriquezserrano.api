@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-from blog.models import Profile, User
 from blog.serializers import ProfileSerializer
 from blog.tests.factories import UserFactory
 

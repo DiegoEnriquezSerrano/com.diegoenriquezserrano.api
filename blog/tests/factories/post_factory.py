@@ -3,7 +3,6 @@ import factory
 from blog.models.post import Post
 
 from .user_factory import UserFactory
-from .category_factory import CategoryFactory
 
 
 class PostFactory(factory.django.DjangoModelFactory):

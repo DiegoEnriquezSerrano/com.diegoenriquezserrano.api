@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.test import APITestCase
 
-from blog.models import Notification
 from blog.tests.factories import NotificationFactory, PostFactory, UserFactory
 
 

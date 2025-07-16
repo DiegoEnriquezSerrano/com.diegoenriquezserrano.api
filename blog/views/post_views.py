@@ -1,14 +1,12 @@
-import json
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.views.decorators.http import require_GET, require_POST
 
 from rest_framework import generics
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from blog.models import Post
-from blog.serializers import PostSerializer, UserSerializer
+from blog.serializers import PostSerializer
 
 
 @method_decorator(require_GET, name="get")

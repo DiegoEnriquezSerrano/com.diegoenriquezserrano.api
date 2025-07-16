@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from blog.models import Comment, User, Post
+from blog.models import Comment, Post
 
 from .profile_serializer import ProfileSerializer
 
