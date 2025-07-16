@@ -30,7 +30,7 @@ services:
     networks:
       - diegoenriquezserrano_network
     volumes:
-      - .:/app
+      - .:/py_api
 volumes:
   py_pg:
 networks:

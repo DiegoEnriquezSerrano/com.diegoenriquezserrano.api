@@ -24,14 +24,12 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin
 
 WORKDIR /py_api
 
-COPY --chown=py_api:py_api . .
+COPY --chown=py_api:py_api . /py_api/
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PATH=$PATH:/home/py_api/.local/bin
 
-USER py_api
-
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "py_api.wsgi:application"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
