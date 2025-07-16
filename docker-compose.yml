@@ -1,0 +1,39 @@
+services:
+  py_api_db:
+    image: postgres:17-alpine
+    env_file: .env
+    environment:
+      POSTGRES_DB: py_api
+      POSTGRES_USER: py_api
+      POSTGRES_PASSWORD: dbpassword
+      PGPORT: 5433
+    expose:
+     - "5433"
+    ports:
+     - "5433:5433"
+    volumes:
+      - py_pg:/var/lib/postgresql/data
+    networks:
+      - diegoenriquezserrano_network
+    command: -p 5433
+  py-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "py_api_db"
+    env_file: .env
+    environment:
+      DATABASE_HOST: py_api_db
+    networks:
+      - diegoenriquezserrano_network
+    volumes:
+      - .:/app
+volumes:
+  py_pg:
+networks:
+  diegoenriquezserrano_network:
+    name: diegoenriquezserrano_network
+    driver: bridge
