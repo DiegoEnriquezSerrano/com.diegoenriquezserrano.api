@@ -11,7 +11,7 @@ urlpatterns = [
     path(
         "user/profile/<username>",
         blog_views.ProfileView.as_view(),
-        name="profile_detail",
+        name="profile_detail_path",
     ),
     path("user/register", blog_views.RegisterView.as_view(), name="register_path"),
     path(
@@ -92,7 +92,7 @@ urlpatterns = [
     path(
         "dashboard/categories/<slug>",
         blog_views.DashboardCategoriesRetrieveUpdateDestroyAPIView.as_view(),
-        name="dashboard_categories_path",
+        name="dashboard_category_detail_path",
     ),
     path(
         "dashboard/comments",
@@ -117,6 +117,7 @@ urlpatterns = [
     path(
         "dashboard/notifications/<notification_id>",
         blog_views.NotificationUpdateAPIView.as_view(),
+        name="dashboard_notification_detail_path",
     ),
     path(
         "dashboard/notifications",

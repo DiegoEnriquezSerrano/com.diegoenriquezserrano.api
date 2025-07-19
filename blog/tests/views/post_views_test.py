@@ -31,7 +31,7 @@ class AuthenticatedPostTests(APITestCase):
                 "title": "updated title",
                 "description": "description",
                 "body": "body",
-                "cover_image_url": "http:www.example.com/home.png",
+                "cover_image_url": "http://www.example.com/home.png",
                 "excerpt": "excerpt",
             },
             format="json",

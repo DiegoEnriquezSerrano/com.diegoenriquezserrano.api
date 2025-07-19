@@ -7,10 +7,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         depth = 1
         fields = [
-            "author",
+            "banner",
             "bio",
             "bluesky",
+            "description",
             "github",
+            "image",
             "linkedin",
             "mastodon",
             "twitch",

@@ -7,7 +7,7 @@ from django.utils.text import slugify
 class Post(models.Model):
     body = models.TextField()
     categories = models.ManyToManyField(to="blog.Category", related_name="posts")
-    cover_image_url = models.CharField(null=False)
+    cover_image_url = models.URLField(null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     date = models.DateTimeField(auto_now_add=True)
     description = models.TextField(validators=[MaxLengthValidator(200)])

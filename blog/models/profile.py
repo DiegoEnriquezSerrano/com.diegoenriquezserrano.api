@@ -1,9 +1,17 @@
 from django.db import models
+from django.core.validators import MaxLengthValidator
 
 
 class Profile(models.Model):
-    author = models.BooleanField(default=False)
-    bio = models.CharField(max_length=200, null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
+    description = models.TextField(
+        validators=[MaxLengthValidator(200)], null=True, blank=True
+    )
+    display_name = models.CharField(
+        validators=[MaxLengthValidator(70)], null=True, blank=True
+    )
+    image = models.URLField(max_length=200, null=True, blank=True)
+    banner = models.URLField(max_length=200, null=True, blank=True)
     bluesky = models.CharField(max_length=100, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     github = models.CharField(max_length=100, null=True, blank=True)
