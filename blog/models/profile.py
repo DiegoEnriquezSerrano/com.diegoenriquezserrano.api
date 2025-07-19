@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MaxLengthValidator
+from django.core.validators import MaxLengthValidator, RegexValidator
 
 
 class Profile(models.Model):
@@ -12,7 +12,17 @@ class Profile(models.Model):
     )
     image = models.URLField(max_length=200, null=True, blank=True)
     banner = models.URLField(max_length=200, null=True, blank=True)
-    bluesky = models.CharField(max_length=100, null=True, blank=True)
+    bluesky = models.CharField(
+        null=True,
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex=r"^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$",
+                message="Invalid ATProtocol handle, please refer to specifications for valid values. https://atproto.com/specs/handle.",
+                code="invalid_at_proto_handle",
+            )
+        ],
+    )
     date = models.DateTimeField(auto_now_add=True)
     github = models.CharField(max_length=100, null=True, blank=True)
     linkedin = models.CharField(max_length=100, null=True, blank=True)
