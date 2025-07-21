@@ -124,4 +124,9 @@ urlpatterns = [
         blog_views.NotificationListAPIView.as_view(),
         name="dashboard_notifications_path",
     ),
+    path(
+        "dashboard/profile",
+        blog_views.DashboardProfileRetrieveUpdateAPIView.as_view(),
+        name="dashboard_profile_path",
+    ),
 ]

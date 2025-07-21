@@ -3,6 +3,10 @@ from .register_views import RegisterView as RegisterView
 from .token_views import BlogTokenObtainPairView as BlogTokenObtainPairView
 from .user_views import ProfileView as ProfileView
 
+from .authenticated.profile_views import (
+    DashboardProfileRetrieveUpdateAPIView as DashboardProfileRetrieveUpdateAPIView,
+)
+
 from .authenticated.bookmark_views import (
     BookmarkCreateAPIView as BookmarkCreateAPIView,
     DashboardBookmarkListsAPIView as DashboardBookmarkListsAPIView,

@@ -1,6 +1,7 @@
 from .comment_views_test import AuthenticatedCommentTests as AuthenticatedCommentTests
 from .register_views_test import UserRegistrationTests as UserRegistrationTests
 from .user_views_test import UserTests as UserTests
+from .profile_views_test import AuthenticatedProfileTests as AuthenticatedProfileTests
 
 from .bookmark_views_test import (
     AuthenticatedBookmarkTests as AuthenticatedBookmarkTests,
