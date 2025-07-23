@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 
 from .profile import Profile
+from .user_subscription import UserSubscription
 
 
 class User(AbstractUser):
@@ -19,6 +20,12 @@ class User(AbstractUser):
             )
         ],
     )
+    subscribers = models.ManyToManyField(
+        to="self",
+        through="UserSubscription",
+        related_name="subscribed",
+        symmetrical=False,
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -31,6 +38,12 @@ class User(AbstractUser):
 
     def posts(self):
         return self.post_set.filter(user=self, draft=False).order_by("-id")
+
+    def total_active_subscribers(self):
+        return UserSubscription.objects.filter(user=self.id, active=True).count()
+
+    def total_active_subscribed(self):
+        return UserSubscription.objects.filter(subscriber=self.id, active=True).count()
 
 
 def create_user_profile(sender, instance, created, **kwargs):

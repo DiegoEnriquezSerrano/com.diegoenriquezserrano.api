@@ -19,6 +19,11 @@ urlpatterns = [
         blog_views.BlogTokenObtainPairView.as_view(),
         name="login_path",
     ),
+    path(
+        "subscribe/<username>",
+        blog_views.SubscriptionCreateAPIView.as_view(),
+        name="subscribe_path",
+    ),
     ##
     ##
     ## Post paths
@@ -128,5 +133,25 @@ urlpatterns = [
         "dashboard/profile",
         blog_views.DashboardProfileRetrieveUpdateAPIView.as_view(),
         name="dashboard_profile_path",
+    ),
+    path(
+        "dashboard/subscriptions",
+        blog_views.DashboardSubscriptionListsAPIView.as_view(),
+        name="dashboard_subscriptions_path",
+    ),
+    path(
+        "dashboard/user_subscriptions",
+        blog_views.DashboardUserSubscriptionListsAPIView.as_view(),
+        name="dashboard_user_subscriptions_path",
+    ),
+    path(
+        "dashboard/subscribe/<username>",
+        blog_views.DashboardUserSubscriptionCreateAPIView.as_view(),
+        name="dashboard_user_subscriptions_subscribe_path",
+    ),
+    path(
+        "dashboard/user_subscriptions/<id>",
+        blog_views.DashboardUserSubscriptionRetrieveUpdateAPIView.as_view(),
+        name="dashboard_user_subscriptions_detail_path",
     ),
 ]
