@@ -5,15 +5,17 @@ from . import views as blog_views
 app_name = "blog"
 
 urlpatterns = [
-    ##
-    ##
-    ## User paths
     path(
         "user/profile/<username>",
         blog_views.ProfileView.as_view(),
         name="profile_detail_path",
     ),
     path("user/register", blog_views.RegisterView.as_view(), name="register_path"),
+    path(
+        "user/confirmation/<signed_confirmation_token>",
+        blog_views.ConfirmationView.as_view(),
+        name="confirmation_path",
+    ),
     path(
         "user/token",
         blog_views.BlogTokenObtainPairView.as_view(),
@@ -24,9 +26,11 @@ urlpatterns = [
         blog_views.SubscriptionCreateAPIView.as_view(),
         name="subscribe_path",
     ),
-    ##
-    ##
-    ## Post paths
+    path(
+        "subscription/confirmation/<signed_confirmation_token>",
+        blog_views.SubscriptionConfirmationUpdateAPIView.as_view(),
+        name="subscription_confirmation_path",
+    ),
     path("posts", blog_views.PostListCreateAPIView.as_view(), name="posts_path"),
     path(
         "posts/bookmark",
@@ -58,9 +62,6 @@ urlpatterns = [
         blog_views.DashboardPostRetrieveUpdateDestroyAPIView.as_view(),
         name="post_update_path",
     ),
-    ##
-    ##
-    ## Category paths
     path(
         "categories",
         blog_views.CategoryListCreateAPIView.as_view(),
@@ -81,9 +82,6 @@ urlpatterns = [
         blog_views.CategoryPostsListAPIView.as_view(),
         name="category_posts_path",
     ),
-    ##
-    ##
-    ## Dashboard paths
     path(
         "dashboard/bookmarks",
         blog_views.DashboardBookmarkListsAPIView.as_view(),

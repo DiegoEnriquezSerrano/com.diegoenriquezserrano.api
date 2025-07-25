@@ -8,6 +8,7 @@ from .category_views_test import (
 )
 
 from .comment_views_test import AuthenticatedCommentTests as AuthenticatedCommentTests
+from .confirmation_views_test import ConfirmationViewTests as ConfirmationViewTests
 
 from .notification_views_test import (
     AuthenticatedNotificationTests as AuthenticatedNotificationTests,

@@ -1,5 +1,6 @@
 from .authenticated.author_views import AuthorStatsAPIView as AuthorStatsAPIView
 from .register_views import RegisterView as RegisterView
+from .confirmation_views import ConfirmationView as ConfirmationView
 from .token_views import BlogTokenObtainPairView as BlogTokenObtainPairView
 from .user_views import ProfileView as ProfileView
 
@@ -57,4 +58,7 @@ from .post_views import (
     PostListByUserAPIView as PostListByUserAPIView,
 )
 
-from .subscription_views import SubscriptionCreateAPIView as SubscriptionCreateAPIView
+from .subscription_views import (
+    SubscriptionCreateAPIView as SubscriptionCreateAPIView,
+    SubscriptionConfirmationUpdateAPIView as SubscriptionConfirmationUpdateAPIView,
+)

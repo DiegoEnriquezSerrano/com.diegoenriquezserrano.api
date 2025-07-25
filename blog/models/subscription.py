@@ -1,7 +1,11 @@
+import secrets
+
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.utils import timezone
+
+from blog.services.email_service import EmailService
 
 
 class Subscription(models.Model):
@@ -12,6 +16,14 @@ class Subscription(models.Model):
     email = models.EmailField(null=False, blank=False)
     name = models.CharField(validators=[MaxLengthValidator(70)], null=True, blank=True)
     user = models.ForeignKey(to="blog.User", on_delete=models.CASCADE)
+    confirmation_token = models.CharField(
+        unique=True, max_length=100, null=True, blank=True
+    )
+    confirmation_token_sent_at = models.DateTimeField(
+        auto_now_add=False, null=True, blank=True
+    )
+    confirmed = models.BooleanField(default=False, null=False)
+    confirmed_at = models.DateTimeField(auto_now_add=False, null=True, blank=True)
 
     class Meta:
         ordering = ["-activated_date"]
@@ -41,6 +53,16 @@ class Subscription(models.Model):
                 include=["active"],
                 name="subscription_email_idx",
             ),
+            models.Index(
+                fields=["confirmation_token"],
+                include=[
+                    "confirmation_token_sent_at",
+                    "confirmed",
+                    "confirmed_at",
+                    "id",
+                ],
+                name="subscription_confirmation_idx",
+            ),
         ]
 
     def __str__(self):
@@ -65,3 +87,36 @@ class Subscription(models.Model):
         elif self.deactivated_date is None:
             self.deactivated_date = timezone.now()
             self.activated_date = None
+
+    def generate_confirmation_token(self):
+        confirmation_token = secrets.token_urlsafe(64)
+        self.confirmation_token = confirmation_token
+        self.save()
+
+    def resend_confirmation_email(self):
+        if not self.confirmed:
+            self.send_confirmation_email()
+
+    def send_confirmation_email(self):
+        result = EmailService.send_subscription_confirmation_email(self)
+
+        if result["Message"] == "OK":
+            self.confirmation_token_sent_at = timezone.now()
+            self.save()
+
+    def attempt_confirmation(self):
+        self.confirmed = True
+        self.confirmed_at = timezone.now()
+        self.save()
+
+        return self.confirmed
+
+
+def post_create_actions(sender, instance, created, **kwargs):
+    if created:
+        if not instance.confirmed:
+            instance.generate_confirmation_token()
+            instance.send_confirmation_email()
+
+
+models.signals.post_save.connect(post_create_actions, sender=Subscription)

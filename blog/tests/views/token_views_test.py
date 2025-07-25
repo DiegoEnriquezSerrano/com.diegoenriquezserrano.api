@@ -1,5 +1,7 @@
 import json
 
+from django.utils import timezone
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -9,7 +11,11 @@ from blog.models.user import User
 class BlogTokenObtainPairViewTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email="testuser@example.com", username="testuser", password="testpassword"
+            email="testuser@example.com",
+            username="testuser",
+            password="testpassword",
+            confirmed=True,
+            confirmed_at=timezone.now(),
         )
 
     def test_obtain_token_pair_success(self):

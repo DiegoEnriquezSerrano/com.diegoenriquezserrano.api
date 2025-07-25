@@ -18,11 +18,15 @@ import os
 
 load_dotenv()
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
-DEBUG = os.getenv("DEBUG")
 
-if os.getenv("DJANGO_ENVIRONMENT") == "development":
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DEBUG = os.getenv("DEBUG")
+DJANGO_ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT")
+
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+
+if DJANGO_ENVIRONMENT == "development":
     ALLOWED_HOSTS = [
         os.getenv("ALLOWED_HOST_DOCKER"),
         os.getenv("ALLOWED_HOST_DEVELOPMENT"),
@@ -43,6 +47,21 @@ INSTALLED_APPS = [
     "blog",
 ]
 
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+SERVER_EMAIL = os.getenv("SERVER_EMAIL")
+
+EMAIL_BACKEND = "postmarker.django.EmailBackend"
+
+POSTMARK_ACCOUNT_TOKEN = os.getenv("POSTMARK_ACCOUNT_TOKEN")
+POSTMARK_SERVER_TOKEN = os.getenv("POSTMARK_SERVER_TOKEN")
+POSTMARK_TIMEOUT = os.getenv("POSTMARK_TIMEOUT")
+POSTMARK = {
+    "TOKEN": os.getenv("POSTMARK_SERVER_TOKEN"),
+    "TEST_MODE": os.getenv("POSTMARK_TEST_MODE"),
+    "VERBOSITY": os.getenv("POSTMARK_VERBOSITY"),
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -56,12 +75,10 @@ MIDDLEWARE = [
 ]
 
 
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     os.getenv("CORS_ALLOWED_ORIGIN_CLIENT"),
 ]
-
-
-CORS_ALLOW_CREDENTIALS = True
 
 
 ROOT_URLCONF = "py_api.urls"
@@ -70,7 +87,10 @@ ROOT_URLCONF = "py_api.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [
+            os.path.join(BASE_DIR, "templates"),
+            os.path.join(BASE_DIR, "templates", "email"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -189,9 +209,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
-
-
-DJANGO_ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT")
 
 
 LOGGING_PATH = os.path.join(BASE_DIR, "logs", f"django.{DJANGO_ENVIRONMENT}.log")

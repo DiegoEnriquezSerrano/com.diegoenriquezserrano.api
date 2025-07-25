@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils import timezone
 
 from blog.models import Subscription
-from blog.tests.factories import UserFactory
+from blog.tests.factories import UserFactory, SubscriptionFactory
 
 
 class SubscriptionModelTests(TestCase):
@@ -24,7 +25,11 @@ class SubscriptionModelTests(TestCase):
 
     def test_saving_record_sets_activation_dates(self):
         subscription = Subscription(
-            email="newuser@example.com", user=self.user, active=False
+            email="newuser@example.com",
+            user=self.user,
+            active=False,
+            confirmed=True,
+            confirmed_at=timezone.now(),
         )
 
         self.assertIsNone(subscription.activated_date)
@@ -38,14 +43,18 @@ class SubscriptionModelTests(TestCase):
 
     def test_creating_record_sets_activation_dates(self):
         subscription = Subscription.objects.create(
-            email="newuser@example.com", user=self.user, active=False
+            email="newuser@example.com",
+            user=self.user,
+            active=False,
+            confirmed=True,
+            confirmed_at=timezone.now(),
         )
 
         self.assertIsNone(subscription.activated_date)
         self.assertIsNotNone(subscription.deactivated_date)
 
     def test_unique_email_per_user(self):
-        Subscription.objects.create(email="subscriber@example.com", user=self.user)
+        SubscriptionFactory(email="subscriber@example.com", user=self.user)
 
         with self.assertRaisesMessage(
             ValidationError, "Subscription with this User and Email already exists."
@@ -57,6 +66,4 @@ class SubscriptionModelTests(TestCase):
             ValidationError,
             "Cannot self-subscribe",
         ):
-            Subscription.objects.create(
-                email=self.user.email, user=self.user
-            ).full_clean()
+            Subscription(email=self.user.email, user=self.user).full_clean()

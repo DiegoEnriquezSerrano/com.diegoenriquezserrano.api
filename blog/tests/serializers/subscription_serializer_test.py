@@ -1,14 +1,12 @@
 from django.test import TestCase
 
-from blog.models import Subscription, User
 from blog.serializers import SubscriptionSerializer
+from blog.tests.factories import UserFactory, SubscriptionFactory
 
 
 class SubscriptionSerializerTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="user@example.com", password="password123"
-        )
+        self.user = UserFactory(username="testuser", email="user@example.com")
 
     def test_valid_subscription(self):
         serializer = SubscriptionSerializer(
@@ -60,7 +58,7 @@ class SubscriptionSerializerTest(TestCase):
         self.assertIn("user", serializer.errors)
 
     def test_unique_email_per_user(self):
-        Subscription.objects.create(
+        SubscriptionFactory(
             email="subscriber@example.com", name="First Subscriber", user=self.user
         )
 

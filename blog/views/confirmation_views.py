@@ -1,39 +1,18 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.http import require_http_methods
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 
-from blog.models import Subscription, User
-from blog.serializers import SubscriptionSerializer
+from blog.models import User
 from blog.services.confirmation_service import ConfirmationService
-
-
-@method_decorator(require_POST, name="post")
-class SubscriptionCreateAPIView(generics.CreateAPIView):
-    queryset = Subscription.objects.all()
-    permission_classes = [AllowAny]
-    serializer_class = SubscriptionSerializer
-
-    def post(self, request, *args, **kwargs):
-        user = get_object_or_404(User, username=self.kwargs.get("username"))
-        serializer = SubscriptionSerializer(
-            data={"user": user.id, "email": request.data.get("email")}
-        )
-
-        if serializer.is_valid():
-            serializer.save()
-
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(require_http_methods(["PUT"]), name="put")
 @method_decorator(require_http_methods(["PATCH"]), name="patch")
-class SubscriptionConfirmationUpdateAPIView(generics.UpdateAPIView):
+class ConfirmationView(generics.UpdateAPIView):
     permission_classes = [AllowAny]
 
     def get_object(self):
@@ -42,7 +21,7 @@ class SubscriptionConfirmationUpdateAPIView(generics.UpdateAPIView):
         )
 
         return get_object_or_404(
-            Subscription,
+            User,
             confirmation_token=unsigned_token,
         )
 
@@ -52,18 +31,18 @@ class SubscriptionConfirmationUpdateAPIView(generics.UpdateAPIView):
         )
 
         return get_object_or_404(
-            Subscription,
+            User,
             confirmation_token=unsigned_token,
         )
 
     def update(self, request, *args, **kwargs):
-        subscription = self.get_queryset()
+        user = self.get_queryset()
 
-        if not subscription.confirmed:
-            subscription.attempt_confirmation()
+        if not user.confirmed:
+            user.attempt_confirmation()
 
             return JsonResponse(
-                {"message": "subscription confirmation OK"}, status=status.HTTP_200_OK
+                {"message": "user confirmation OK"}, status=status.HTTP_200_OK
             )
         else:
             return JsonResponse(
