@@ -1,6 +1,6 @@
 from .authenticated.author_views import AuthorStatsAPIView as AuthorStatsAPIView
-from .register_views import RegisterView as RegisterView
 from .confirmation_views import ConfirmationView as ConfirmationView
+from .register_views import RegisterView as RegisterView
 from .token_views import BlogTokenObtainPairView as BlogTokenObtainPairView
 from .user_views import ProfileView as ProfileView
 
@@ -30,9 +30,14 @@ from .authenticated.notification_views import (
 )
 
 from .authenticated.post_views import (
-    PostLikeCreateAPIView as PostLikeCreateAPIView,
     DashboardPostListsAPIView as DashboardPostListsAPIView,
     DashboardPostRetrieveUpdateDestroyAPIView as DashboardPostRetrieveUpdateDestroyAPIView,
+    PostLikeCreateAPIView as PostLikeCreateAPIView,
+)
+
+from .authenticated.project_views import (
+    DashboardProjectListCreateAPIView as DashboardProjectListCreateAPIView,
+    DashboardProjectRetrieveUpdateDestroyAPIView as DashboardProjectRetrieveUpdateDestroyAPIView,
 )
 
 from .authenticated.subscription_views import (
@@ -40,8 +45,8 @@ from .authenticated.subscription_views import (
 )
 
 from .authenticated.user_subscription_views import (
-    DashboardUserSubscriptionListsAPIView as DashboardUserSubscriptionListsAPIView,
     DashboardUserSubscriptionCreateAPIView as DashboardUserSubscriptionCreateAPIView,
+    DashboardUserSubscriptionListsAPIView as DashboardUserSubscriptionListsAPIView,
     DashboardUserSubscriptionRetrieveUpdateAPIView as DashboardUserSubscriptionRetrieveUpdateAPIView,
 )
 
@@ -53,12 +58,18 @@ from .category_views import (
 )
 
 from .post_views import (
+    PostListByUserAPIView as PostListByUserAPIView,
     PostListCreateAPIView as PostListCreateAPIView,
     PostRetrieveAPIView as PostRetrieveAPIView,
-    PostListByUserAPIView as PostListByUserAPIView,
+)
+
+from .project_views import (
+    ProjectListAPIView as ProjectListAPIView,
+    ProjectListByUsernameAPIView as ProjectListByUsernameAPIView,
+    ProjectRetrieveAPIView as ProjectRetrieveAPIView,
 )
 
 from .subscription_views import (
-    SubscriptionCreateAPIView as SubscriptionCreateAPIView,
     SubscriptionConfirmationUpdateAPIView as SubscriptionConfirmationUpdateAPIView,
+    SubscriptionCreateAPIView as SubscriptionCreateAPIView,
 )

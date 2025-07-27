@@ -4,5 +4,6 @@ from .comment_factory import CommentFactory as CommentFactory
 from .notification_factory import NotificationFactory as NotificationFactory
 from .post_factory import PostFactory as PostFactory
 from .profile_factory import ProfileFactory as ProfileFactory
+from .project_factory import ProjectFactory as ProjectFactory
 from .subscription_factory import SubscriptionFactory as SubscriptionFactory
 from .user_factory import UserFactory as UserFactory

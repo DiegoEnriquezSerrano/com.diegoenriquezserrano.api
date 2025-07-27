@@ -5,6 +5,7 @@ from .factories import (
     NotificationFactory as NotificationFactory,
     PostFactory as PostFactory,
     ProfileFactory as ProfileFactory,
+    ProjectFactory as ProjectFactory,
     UserFactory as UserFactory,
 )
 
@@ -21,6 +22,7 @@ from .models import (
 from .serializers import (
     CategorySerializerTest as CategorySerializerTest,
     ProfileSerializerTest as ProfileSerializerTest,
+    ProjectSerializerTest as ProjectSerializerTest,
     SubscriptionSerializerTest as SubscriptionSerializerTest,
     UserSubscriptionSerializerTest as UserSubscriptionSerializerTest,
 )
@@ -32,11 +34,12 @@ from .views import (
     AuthenticatedNotificationTests as AuthenticatedNotificationTests,
     AuthenticatedPostTests as AuthenticatedPostTests,
     AuthenticatedProfileTests as AuthenticatedProfileTests,
-    AuthenticatedUserSubscriptionTests as AuthenticatedUserSubscriptionTests,
     AuthenticatedSubscriptionTests as AuthenticatedSubscriptionTests,
+    AuthenticatedUserSubscriptionTests as AuthenticatedUserSubscriptionTests,
     BlogTokenObtainPairViewTests as BlogTokenObtainPairViewTests,
     CategoryTests as CategoryTests,
     PostTests as PostTests,
+    ProjectTests as ProjectTests,
     UserRegistrationTests as UserRegistrationTests,
     UserTests as UserTests,
 )

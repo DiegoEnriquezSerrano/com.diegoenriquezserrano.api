@@ -58,6 +58,21 @@ urlpatterns = [
         name="post_detail_path",
     ),
     path(
+        "projects",
+        blog_views.ProjectListAPIView.as_view(),
+        name="projects_path",
+    ),
+    path(
+        "projects/<username>",
+        blog_views.ProjectListByUsernameAPIView.as_view(),
+        name="projects_by_username_path",
+    ),
+    path(
+        "projects/<username>/<slug>",
+        blog_views.ProjectRetrieveAPIView.as_view(),
+        name="project_detail_path",
+    ),
+    path(
         "dashboard/posts/<post_id>",
         blog_views.DashboardPostRetrieveUpdateDestroyAPIView.as_view(),
         name="post_update_path",
@@ -131,6 +146,16 @@ urlpatterns = [
         "dashboard/profile",
         blog_views.DashboardProfileRetrieveUpdateAPIView.as_view(),
         name="dashboard_profile_path",
+    ),
+    path(
+        "dashboard/projects",
+        blog_views.DashboardProjectListCreateAPIView.as_view(),
+        name="dashboard_projects_path",
+    ),
+    path(
+        "dashboard/projects/<slug>",
+        blog_views.DashboardProjectRetrieveUpdateDestroyAPIView.as_view(),
+        name="dashboard_project_detail_path",
     ),
     path(
         "dashboard/subscriptions",

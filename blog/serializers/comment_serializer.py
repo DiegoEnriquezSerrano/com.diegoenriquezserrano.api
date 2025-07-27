@@ -12,11 +12,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = [
-            "id",
-            "post",
-            "post_title",
             "body",
             "created_on",
+            "id",
+            "post_title",
+            "post",
             "profile",
         ]
         depth = 1
@@ -26,3 +26,13 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_profile(self, comment):
         return comment.user.profile
+
+
+class NotificationCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = [
+            "body",
+            "created_on",
+            "id",
+        ]

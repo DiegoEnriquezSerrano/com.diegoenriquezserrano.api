@@ -42,3 +42,10 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_profile(self, post):
         return post.user.profile
+
+
+class NotificationPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        depth = 0
+        fields = ["id", "title", "cover_image_url", "excerpt", "slug"]

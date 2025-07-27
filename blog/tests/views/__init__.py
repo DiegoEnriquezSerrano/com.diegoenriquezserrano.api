@@ -3,8 +3,8 @@ from .bookmark_views_test import (
 )
 
 from .category_views_test import (
-    CategoryTests as CategoryTests,
     AuthenticatedCategoryTests as AuthenticatedCategoryTests,
+    CategoryTests as CategoryTests,
 )
 
 from .comment_views_test import AuthenticatedCommentTests as AuthenticatedCommentTests
@@ -20,6 +20,12 @@ from .post_views_test import (
 )
 
 from .profile_views_test import AuthenticatedProfileTests as AuthenticatedProfileTests
+
+from .project_views_test import (
+    AuthenticatedProjectTests as AuthenticatedProjectTests,
+    ProjectTests as ProjectTests,
+)
+
 from .register_views_test import UserRegistrationTests as UserRegistrationTests
 
 from .subscription_views_test import (
