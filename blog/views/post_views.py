@@ -1,6 +1,5 @@
-from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -10,23 +9,12 @@ from blog.serializers import PostSerializer
 
 
 @method_decorator(require_GET, name="get")
-@method_decorator(require_POST, name="post")
-class PostListCreateAPIView(generics.ListCreateAPIView):
+class PostListAPIView(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self, *args, **kwargs):
         return Post.objects.filter(draft=False)
-
-    def post(self, request):
-        post = PostSerializer(data=request.data)
-
-        if post.is_valid():
-            post.save(user=self.request.user)
-
-            return JsonResponse(post.data, status=201)
-        else:
-            return JsonResponse(post.errors, status=400)
 
 
 @method_decorator(require_GET, name="get")

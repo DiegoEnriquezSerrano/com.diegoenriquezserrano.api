@@ -31,7 +31,7 @@ urlpatterns = [
         blog_views.SubscriptionConfirmationUpdateAPIView.as_view(),
         name="subscription_confirmation_path",
     ),
-    path("posts", blog_views.PostListCreateAPIView.as_view(), name="posts_path"),
+    path("posts", blog_views.PostListAPIView.as_view(), name="posts_path"),
     path(
         "posts/bookmark",
         blog_views.BookmarkCreateAPIView.as_view(),
@@ -73,13 +73,13 @@ urlpatterns = [
         name="project_detail_path",
     ),
     path(
-        "dashboard/posts/<post_id>",
+        "dashboard/posts/<slug>",
         blog_views.DashboardPostRetrieveUpdateDestroyAPIView.as_view(),
         name="post_update_path",
     ),
     path(
         "categories",
-        blog_views.CategoryListCreateAPIView.as_view(),
+        blog_views.CategoryListAPIView.as_view(),
         name="categories_path",
     ),
     path(
@@ -104,7 +104,7 @@ urlpatterns = [
     ),
     path(
         "dashboard/categories",
-        blog_views.DashboardCategoryListsAPIView.as_view(),
+        blog_views.DashboardCategoryListCreateAPIView.as_view(),
         name="dashboard_categories_path",
     ),
     path(
@@ -129,8 +129,13 @@ urlpatterns = [
     ),
     path(
         "dashboard/posts",
-        blog_views.DashboardPostListsAPIView.as_view(),
+        blog_views.DashboardPostListCreateAPIView.as_view(),
         name="dashboard_posts_path",
+    ),
+    path(
+        "dashboard/categories/<category_slug>/posts",
+        blog_views.DashboardCategoryPostListAPIView.as_view(),
+        name="dashboard_category_posts_path",
     ),
     path(
         "dashboard/notifications/<notification_id>",
@@ -177,4 +182,5 @@ urlpatterns = [
         blog_views.DashboardUserSubscriptionRetrieveUpdateAPIView.as_view(),
         name="dashboard_user_subscriptions_detail_path",
     ),
+    path("captcha", blog_views.ChallengeImageView.as_view(), name="captcha_path"),
 ]

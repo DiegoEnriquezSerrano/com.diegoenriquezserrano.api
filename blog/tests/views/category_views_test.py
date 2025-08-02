@@ -107,7 +107,7 @@ class AuthenticatedCategoryTests(APITestCase):
 
     def test_authenticated_user_can_create_category(self):
         response = self.client.post(
-            "/categories", {"name": "Battletoads"}, format="json"
+            "/dashboard/categories", {"name": "Battletoads"}, format="json"
         )
         response_json = json.loads(response.content)
 
@@ -115,6 +115,19 @@ class AuthenticatedCategoryTests(APITestCase):
         self.assertEqual(Category.objects.count(), 1)
         self.assertEqual(
             Category.objects.get(id=response_json["id"]).slug, "battletoads"
+        )
+
+    def test_authenticated_user_cannot_create_duplicate_category(self):
+        CategoryFactory(name="Battletoads", user=self.user)
+        response = self.client.post(
+            "/dashboard/categories", {"name": "Battletoads"}, format="json"
+        )
+        response_json = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response_json["non_field_errors"][0],
+            "The fields name, user must make a unique set.",
         )
 
     def test_authenticated_user_can_list_categories(self):

@@ -6,17 +6,43 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 
-from blog.models import Post, Notification
-from blog.serializers import PostSerializer
+from blog.models import Post, Notification, Category
+from blog.serializers import PostSerializer, CreatePostSerializer
 
 
 @method_decorator(require_GET, name="get")
-class DashboardPostListsAPIView(generics.ListAPIView):
+@method_decorator(require_POST, name="post")
+class DashboardPostListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Post.objects.filter(user=self.request.user, draft=False).order_by("-id")
+
+    def post(self, request):
+        serializer = CreatePostSerializer(
+            data={**request.data, "user": self.request.user.id}
+        )
+
+        if serializer.is_valid():
+            result = serializer.save()
+
+            return JsonResponse(PostSerializer(result).data, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+
+
+@method_decorator(require_GET, name="get")
+class DashboardCategoryPostListAPIView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        category_slug = self.kwargs.get("category_slug")
+
+        return Category.find_by_slug_and_username(
+            category_slug, self.request.user.username
+        ).posts.filter(draft=False)
 
 
 @method_decorator(require_GET, name="get")
@@ -28,20 +54,22 @@ class DashboardPostRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAP
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        return Post.objects.get(id=self.kwargs["post_id"])
+        return get_object_or_404(Post, slug=self.kwargs["slug"])
 
     def get_queryset(self):
-        return Post.objects.get(id=self.kwargs["post_id"], user=self.request.user)
+        return get_object_or_404(Post, slug=self.kwargs["slug"], user=self.request.user)
 
     def update(self, request, *args, **kwargs):
         post = self.get_queryset()
         partial = request.method == "PATCH"
-        serializer = PostSerializer(post, data=request.data, partial=partial)
+        serializer = CreatePostSerializer(
+            post, data={**request.data, "user": self.request.user.id}, partial=partial
+        )
 
         if serializer.is_valid():
-            serializer.save()
+            result = serializer.save()
 
-            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            return JsonResponse(PostSerializer(result).data, status=status.HTTP_200_OK)
         else:
             return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

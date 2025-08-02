@@ -7,16 +7,28 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 
 from blog.models import Category
-from blog.serializers import CategorySerializer
+from blog.serializers import CategorySerializer, CreateCategorySerializer
 
 
 @method_decorator(require_GET, name="get")
-class DashboardCategoryListsAPIView(generics.ListAPIView):
+class DashboardCategoryListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user).order_by("-id")
+
+    def post(self, request):
+        data = {**self.request.data, "user": self.request.user.id}
+        serializer = CreateCategorySerializer(data=data)
+
+        if serializer.is_valid():
+            record = serializer.save(user=self.request.user)
+            category = CategorySerializer(record)
+
+            return JsonResponse(category.data, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
 
 @method_decorator(require_GET, name="get")

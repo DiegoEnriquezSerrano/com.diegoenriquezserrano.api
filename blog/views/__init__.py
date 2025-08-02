@@ -3,6 +3,7 @@ from .confirmation_views import ConfirmationView as ConfirmationView
 from .register_views import RegisterView as RegisterView
 from .token_views import BlogTokenObtainPairView as BlogTokenObtainPairView
 from .user_views import ProfileView as ProfileView
+from .captcha_views import ChallengeImageView as ChallengeImageView
 
 from .authenticated.profile_views import (
     DashboardProfileRetrieveUpdateAPIView as DashboardProfileRetrieveUpdateAPIView,
@@ -15,7 +16,7 @@ from .authenticated.bookmark_views import (
 
 from .authenticated.category_views import (
     DashboardCategoriesRetrieveUpdateDestroyAPIView as DashboardCategoriesRetrieveUpdateDestroyAPIView,
-    DashboardCategoryListsAPIView as DashboardCategoryListsAPIView,
+    DashboardCategoryListCreateAPIView as DashboardCategoryListCreateAPIView,
 )
 
 from .authenticated.comment_views import (
@@ -30,9 +31,10 @@ from .authenticated.notification_views import (
 )
 
 from .authenticated.post_views import (
-    DashboardPostListsAPIView as DashboardPostListsAPIView,
+    DashboardPostListCreateAPIView as DashboardPostListCreateAPIView,
     DashboardPostRetrieveUpdateDestroyAPIView as DashboardPostRetrieveUpdateDestroyAPIView,
     PostLikeCreateAPIView as PostLikeCreateAPIView,
+    DashboardCategoryPostListAPIView as DashboardCategoryPostListAPIView,
 )
 
 from .authenticated.project_views import (
@@ -52,14 +54,14 @@ from .authenticated.user_subscription_views import (
 
 from .category_views import (
     CategoryListByUserAPIView as CategoryListByUserAPIView,
-    CategoryListCreateAPIView as CategoryListCreateAPIView,
+    CategoryListAPIView as CategoryListAPIView,
     CategoryPostsListAPIView as CategoryPostsListAPIView,
     CategoryRetrieveAPIView as CategoryRetrieveAPIView,
 )
 
 from .post_views import (
     PostListByUserAPIView as PostListByUserAPIView,
-    PostListCreateAPIView as PostListCreateAPIView,
+    PostListAPIView as PostListAPIView,
     PostRetrieveAPIView as PostRetrieveAPIView,
 )
 

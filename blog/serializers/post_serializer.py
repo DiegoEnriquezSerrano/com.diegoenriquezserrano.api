@@ -1,6 +1,8 @@
+from django.utils.text import slugify
+
 from rest_framework import serializers
 
-from blog.models import Post
+from blog.models import Post, Category, User
 
 from .category_serializer import CategorySerializer
 from .comment_serializer import CommentSerializer
@@ -44,8 +46,41 @@ class PostSerializer(serializers.ModelSerializer):
         return post.user.profile
 
 
+class CreatePostSerializer(serializers.ModelSerializer):
+    categories = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), required=False, many=True
+    )
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
+    class Meta:
+        model = Post
+        fields = [
+            "body",
+            "categories",
+            "cover_image_url",
+            "description",
+            "draft",
+            "excerpt",
+            "featured",
+            "title",
+            "user",
+        ]
+
+    def validate(self, data):
+        self.slug = slugify(data["title"])
+
+        super().validate(data)
+
+        return data
+
+
 class NotificationPostSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(required=False, read_only=True)
+
     class Meta:
         model = Post
         depth = 0
-        fields = ["id", "title", "cover_image_url", "excerpt", "slug"]
+        fields = ["id", "title", "cover_image_url", "excerpt", "slug", "profile"]
+
+    def get_profile(self, post):
+        return post.user.profile

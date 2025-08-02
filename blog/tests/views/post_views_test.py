@@ -26,7 +26,7 @@ class AuthenticatedPostTests(APITestCase):
 
     def test_authenticated_user_can_create_post(self):
         response = self.client.post(
-            "/posts",
+            "/dashboard/posts",
             {
                 "title": "updated title",
                 "description": "description",
@@ -40,12 +40,35 @@ class AuthenticatedPostTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response_json["title"], "updated title")
+        self.assertEqual(
+            response_json["cover_image_url"], "http://www.example.com/home.png"
+        )
+
+    def test_authenticated_user_cannot_create_post_with_duplicate_title(self):
+        PostFactory(title="updated title", user=self.user)
+        response = self.client.post(
+            "/dashboard/posts",
+            {
+                "title": "updated title",
+                "description": "description",
+                "body": "body",
+                "cover_image_url": "http://www.example.com/home.png",
+                "excerpt": "excerpt",
+            },
+            format="json",
+        )
+        response_json = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response_json["title"][0], "post with this title already exists."
+        )
 
     def test_authenticated_user_can_update_post(self):
         category = CategoryFactory(user=self.user)
         post = PostFactory.create(user=self.user, categories=[category])
         response = self.client.put(
-            f"/dashboard/posts/{post.id}",
+            f"/dashboard/posts/{post.slug}",
             {
                 "title": "updated title",
                 "description": post.description,
@@ -65,7 +88,7 @@ class AuthenticatedPostTests(APITestCase):
         category = CategoryFactory(user=self.user)
         post = PostFactory.create(user=self.user, categories=[category])
         response = self.client.patch(
-            f"/dashboard/posts/{post.id}", {"title": "updated title"}, format="json"
+            f"/dashboard/posts/{post.slug}", {"title": "updated title"}, format="json"
         )
         response_json = json.loads(response.content)
         post.refresh_from_db()
@@ -89,6 +112,17 @@ class AuthenticatedPostTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_json["message"], "unliked")
+
+    def test_authenticated_user_can_list_posts_by_category(self):
+        category = CategoryFactory(user=self.user)
+        post = PostFactory.create(user=self.user, categories=[category])
+        response = self.client.get(
+            f"/dashboard/categories/{category.slug}/posts", format="json"
+        )
+        response_json = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_json[0]["title"], post.title)
 
 
 class PostTests(APITestCase):
