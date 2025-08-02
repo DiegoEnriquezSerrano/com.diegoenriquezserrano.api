@@ -7,26 +7,41 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 
 from blog.models import Subscription, User
-from blog.serializers import SubscriptionSerializer
 from blog.services.confirmation_service import ConfirmationService
+from blog.serializers import (
+    SubscriptionSerializer,
+    ChallengeImageSerializer,
+    CreateSubscriptionSerializer,
+)
 
 
 @method_decorator(require_POST, name="post")
 class SubscriptionCreateAPIView(generics.CreateAPIView):
-    queryset = Subscription.objects.all()
     permission_classes = [AllowAny]
+    queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
 
     def post(self, request, *args, **kwargs):
+        challenge = ChallengeImageSerializer(data={**request.data})
+
+        if not challenge.is_valid():
+            return JsonResponse(
+                {"error": "Invalid captcha"},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
+
         user = get_object_or_404(User, username=self.kwargs.get("username"))
-        serializer = SubscriptionSerializer(
-            data={"user": user.id, "email": request.data.get("email")}
+        serializer = CreateSubscriptionSerializer(
+            data={**request.data, "user": user.id}
         )
 
         if serializer.is_valid():
-            serializer.save()
+            result = serializer.save()
 
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse(
+                SubscriptionSerializer(result).data, status=status.HTTP_201_CREATED
+            )
+
         else:
             return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
