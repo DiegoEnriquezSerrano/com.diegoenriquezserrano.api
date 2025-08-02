@@ -9,7 +9,7 @@ from django.utils import timezone
 from .profile import Profile
 from .user_subscription import UserSubscription
 
-from blog.services.email_service import EmailService
+from blog.services.mailgun_service import MailgunService
 
 
 class User(AbstractUser):
@@ -90,9 +90,9 @@ class User(AbstractUser):
             self.send_confirmation_email()
 
     def send_confirmation_email(self):
-        result = EmailService.send_confirmation_email(self)
+        result = MailgunService.send_confirmation_email(self)
 
-        if result["Message"] == "OK":
+        if result.status_code == 200:
             self.confirmation_token_sent_at = timezone.now()
             self.save()
 

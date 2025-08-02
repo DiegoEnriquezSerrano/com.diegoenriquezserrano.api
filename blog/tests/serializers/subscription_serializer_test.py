@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from blog.serializers import SubscriptionSerializer
+from blog.serializers import CreateSubscriptionSerializer
 from blog.tests.factories import UserFactory, SubscriptionFactory
 
 
@@ -9,7 +9,7 @@ class SubscriptionSerializerTest(TestCase):
         self.user = UserFactory(username="testuser", email="user@example.com")
 
     def test_valid_subscription(self):
-        serializer = SubscriptionSerializer(
+        serializer = CreateSubscriptionSerializer(
             data={
                 "email": "user@testsubscriber.com",
                 "name": "Test Subscriber",
@@ -27,7 +27,7 @@ class SubscriptionSerializerTest(TestCase):
     def test_missing_email(self):
         data = {"name": "Test Subscriber", "user": self.user.id, "active": True}
 
-        serializer = SubscriptionSerializer(data=data)
+        serializer = CreateSubscriptionSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
         self.assertIn("email", serializer.errors)
@@ -40,7 +40,7 @@ class SubscriptionSerializerTest(TestCase):
             "email": "example.com",
         }
 
-        serializer = SubscriptionSerializer(data=data)
+        serializer = CreateSubscriptionSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
         self.assertIn("email", serializer.errors)
@@ -52,7 +52,7 @@ class SubscriptionSerializerTest(TestCase):
             "active": True,
         }
 
-        serializer = SubscriptionSerializer(data=data)
+        serializer = CreateSubscriptionSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
         self.assertIn("user", serializer.errors)
@@ -68,7 +68,7 @@ class SubscriptionSerializerTest(TestCase):
             "user": self.user.id,
             "active": True,
         }
-        serializer = SubscriptionSerializer(data=data)
+        serializer = CreateSubscriptionSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
         self.assertIn("non_field_errors", serializer.errors)
@@ -78,7 +78,7 @@ class SubscriptionSerializerTest(TestCase):
         )
 
     def test_cannot_self_subscribe(self):
-        serializer = SubscriptionSerializer(
+        serializer = CreateSubscriptionSerializer(
             data={
                 "email": "user@example.com",
                 "name": "Test Subscriber",

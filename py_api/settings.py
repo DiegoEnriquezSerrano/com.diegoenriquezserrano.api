@@ -62,6 +62,12 @@ POSTMARK = {
     "VERBOSITY": os.getenv("POSTMARK_VERBOSITY"),
 }
 
+MAILGUN = {
+    "API_KEY": os.getenv("MAILGUN_API_KEY"),
+    "FROM_EMAIL": os.getenv("MAILGUN_FROM_EMAIL"),
+    "CNAME": os.getenv("MAILGUN_CNAME"),
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

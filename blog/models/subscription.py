@@ -5,7 +5,7 @@ from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.utils import timezone
 
-from blog.services.email_service import EmailService
+from blog.services.mailgun_service import MailgunService
 
 
 class Subscription(models.Model):
@@ -98,9 +98,9 @@ class Subscription(models.Model):
             self.send_confirmation_email()
 
     def send_confirmation_email(self):
-        result = EmailService.send_subscription_confirmation_email(self)
+        result = MailgunService.send_subscription_confirmation_email(self)
 
-        if result["Message"] == "OK":
+        if result.status_code == 200:
             self.confirmation_token_sent_at = timezone.now()
             self.save()
 

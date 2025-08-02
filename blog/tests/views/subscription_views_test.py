@@ -3,7 +3,9 @@ import os
 
 from unittest import mock
 
+from django.conf import settings
 from django.core.signing import TimestampSigner
+from django.http import HttpResponse
 from django.utils import timezone
 
 from rest_framework import status
@@ -12,6 +14,9 @@ from rest_framework.test import APITestCase
 
 from blog.models import Subscription
 from blog.tests.factories import UserFactory, SubscriptionFactory
+from blog.services.challenge_service import ChallengeService
+
+ok_response = HttpResponse(status=status.HTTP_200_OK)
 
 
 class SubscriptionTests(APITestCase):
@@ -26,53 +31,84 @@ class SubscriptionTests(APITestCase):
         self.signed_token = signer.sign_object(
             {"confirmation_token": self.subscription.confirmation_token}
         )
+        self.challenge = ChallengeService.generate_image_challenge()
+        self.challenge_answer = signer.unsign_object(self.challenge["signed_answer"])[
+            "code"
+        ]
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
-    def test_unauthenticated_user_can_create_subscription(self, mock_postmark_client):
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
+    def test_unauthenticated_user_can_create_subscription(self, mock_mailgun_client):
         response = self.client.post(
             f"/subscribe/{self.user.username}",
-            {"email": "newsubscriber@company.com"},
+            {
+                "email": "newsubscriber@company.com",
+                "challenge_answer": self.challenge_answer,
+                "signed_answer": self.challenge["signed_answer"],
+            },
             format="json",
         )
         response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Subscription.objects.filter(user=self.user).count(), 1)
+        print(response_json)
         self.assertEqual(
             Subscription.objects.get(id=response_json["id"]).email,
             "newsubscriber@company.com",
         )
-        self.assertEqual(mock_postmark_client.called, True)
+        self.assertEqual(mock_mailgun_client.called, True)
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
-    def test_subscription_email_call_args(self, mock_postmark_client):
-        self.client.post(
-            f"/subscribe/{self.user.username}", {"email": "newsubscriber@company.com"}
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
+    def test_unauthenticated_user_cannot_create_with_invalid_captcha(
+        self, mock_mailgun_client
+    ):
+        response = self.client.post(
+            f"/subscribe/{self.user.username}",
+            {
+                "email": "newsubscriber@company.com",
+                "challenge_answer": "wronganswer",
+                "signed_answer": self.challenge["signed_answer"],
+            },
+            format="json",
         )
-        self.assertEqual(mock_postmark_client.called, True)
 
-        args = mock_postmark_client.call_args
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(Subscription.objects.filter(user=self.user).count(), 0)
+        self.assertEqual(mock_mailgun_client.called, False)
 
-        self.assertEqual(args[0][0]["from"], os.getenv("DEFAULT_FROM_EMAIL"))
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
+    def test_subscription_email_call_args(self, mock_mailgun_client):
+        self.client.post(
+            f"/subscribe/{self.user.username}",
+            {
+                "email": "newsubscriber@company.com",
+                "challenge_answer": self.challenge_answer,
+                "signed_answer": self.challenge["signed_answer"],
+            },
+        )
+        self.assertEqual(mock_mailgun_client.called, True)
+
+        args = mock_mailgun_client.call_args
+
+        self.assertEqual(args[0][0]["from"], settings.MAILGUN["FROM_EMAIL"])
         self.assertEqual(args[0][0]["to"], "newsubscriber@company.com")
         self.assertEqual(args[0][0]["subject"], "Subscription confirmation required")
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
-    def test_subscription_email_html_body(self, mock_postmark_client):
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
+    def test_subscription_email_html_body(self, mock_mailgun_client):
         self.client.post(
-            f"/subscribe/{self.user.username}", {"email": "newsubscriber@company.com"}
+            f"/subscribe/{self.user.username}",
+            {
+                "email": "newsubscriber@company.com",
+                "challenge_answer": self.challenge_answer,
+                "signed_answer": self.challenge["signed_answer"],
+            },
         )
-        self.assertEqual(mock_postmark_client.called, True)
+        self.assertEqual(mock_mailgun_client.called, True)
 
-        args = mock_postmark_client.call_args[0][0]["html_body"]
+        args = mock_mailgun_client.call_args[0][0]["html_body"]
 
-        self.assertIn("Hello newsubscriber@company.com", args)
+        self.assertIn("newsubscriber@company.com", args)
         self.assertIn(
             f"Click the button below to verify and complete your subscription to @{self.user.username}:",
             args,
@@ -82,16 +118,19 @@ class SubscriptionTests(APITestCase):
             args,
         )
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
-    def test_subscription_email_text_body(self, mock_postmark_client):
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
+    def test_subscription_email_text_body(self, mock_mailgun_client):
         self.client.post(
-            f"/subscribe/{self.user.username}", {"email": "newsubscriber@company.com"}
+            f"/subscribe/{self.user.username}",
+            {
+                "email": "newsubscriber@company.com",
+                "challenge_answer": self.challenge_answer,
+                "signed_answer": self.challenge["signed_answer"],
+            },
         )
-        self.assertEqual(mock_postmark_client.called, True)
+        self.assertEqual(mock_mailgun_client.called, True)
 
-        args = mock_postmark_client.call_args[0][0]["text_body"]
+        args = mock_mailgun_client.call_args[0][0]["text_body"]
 
         self.assertIn("Hello newsubscriber@company.com", args)
         self.assertIn(
@@ -108,7 +147,11 @@ class SubscriptionTests(APITestCase):
 
         response = self.client.post(
             f"/subscribe/{self.user.username}",
-            {"email": "newsubscriber@company.com"},
+            {
+                "email": "newsubscriber@company.com",
+                "challenge_answer": self.challenge_answer,
+                "signed_answer": self.challenge["signed_answer"],
+            },
             format="json",
         )
         response_json = json.loads(response.content)
@@ -122,7 +165,11 @@ class SubscriptionTests(APITestCase):
     def test_unauthenticated_user_cannot_self_subscribe(self):
         response = self.client.post(
             f"/subscribe/{self.user.username}",
-            {"email": self.user.email},
+            {
+                "email": self.user.email,
+                "challenge_answer": self.challenge_answer,
+                "signed_answer": self.challenge["signed_answer"],
+            },
             format="json",
         )
         response_json = json.loads(response.content)

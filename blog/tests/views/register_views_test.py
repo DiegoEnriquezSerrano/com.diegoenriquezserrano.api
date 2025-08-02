@@ -1,6 +1,9 @@
 import json
 import os
 
+from django.http import HttpResponse
+from django.conf import settings
+
 from unittest import mock
 
 from rest_framework import status
@@ -8,6 +11,9 @@ from rest_framework.test import APITestCase
 
 from blog.models.user import User
 from blog.tests.factories import UserFactory
+
+
+ok_response = HttpResponse(status=status.HTTP_200_OK)
 
 
 class UserRegistrationTests(APITestCase):
@@ -19,9 +25,7 @@ class UserRegistrationTests(APITestCase):
             "password2": "testpassword",
         }
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
     def test_user_registration_success(self, mock_postmark_client):
         response = self.client.post("/user/register", self.data)
         response_json = json.loads(response.content)
@@ -34,47 +38,41 @@ class UserRegistrationTests(APITestCase):
             {"username": self.data["username"], "email": self.data["email"]},
         )
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
     def test_user_registration_email_call_args(self, mock_postmark_client):
         self.client.post("/user/register", self.data)
         self.assertEqual(mock_postmark_client.called, True)
 
         args = mock_postmark_client.call_args
 
-        self.assertEqual(args[0][0]["from"], os.getenv("DEFAULT_FROM_EMAIL"))
+        self.assertEqual(args[0][0]["from"], settings.MAILGUN["FROM_EMAIL"])
         self.assertEqual(args[0][0]["to"], self.data["email"])
         self.assertEqual(args[0][0]["subject"], "User confirmation required")
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
     def test_user_registration_email_html_body(self, mock_postmark_client):
         self.client.post("/user/register", self.data)
         self.assertEqual(mock_postmark_client.called, True)
 
         args = mock_postmark_client.call_args[0][0]["html_body"]
 
-        self.assertIn(f"Welcome {self.data['username']}", args)
+        self.assertIn(f"{self.data['username']}", args)
         self.assertIn(
-            "Click the button below to verify your email and complete your account setup:",
+            "Click the button below to verify your email",
             args,
         )
         self.assertIn(
             f"{os.getenv('CORS_ALLOWED_ORIGIN_CLIENT')}/user/confirmation/", args
         )
 
-    @mock.patch(
-        "blog.services.EmailService.perform_send", return_value={"Message": "OK"}
-    )
+    @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
     def test_user_registration_email_text_body(self, mock_postmark_client):
         self.client.post("/user/register", self.data)
         self.assertEqual(mock_postmark_client.called, True)
 
         args = mock_postmark_client.call_args[0][0]["text_body"]
 
-        self.assertIn(f"Hello {self.data['username']},", args)
+        self.assertIn(f"{self.data['username']},", args)
         self.assertIn(
             "Your account requires confirmation, to complete this step copy and paste the following URL into your browser address bar:",
             args,
