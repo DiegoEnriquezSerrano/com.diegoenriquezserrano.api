@@ -1,0 +1,33 @@
+{% extends 'html/email_base_generic.html' %}
+                          {% block content %}
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td style="color: #fff">
+                                  <p style="line-height: 24px; overflow-wrap: anywhere;">
+                                    Hello <strong style="font-weight: bold; font-variant: normal; font-size: 14px">{{ name }}</strong>,
+                                  </p>
+                                  <p style="line-height: 24px; overflow-wrap: anywhere;">
+                                    Click the button below to verify and complete your subscription to @{{ username }}:
+                                  </p>
+                                  <p style="padding: 16px 0">
+                                    <a
+                                      style="color: #000; background: #65ffff; border: 2px outset #65ffff; border-radius: 16px; padding: 8px 16px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 4px black;"
+                                      href="{{ client_url }}/subscription/confirmation/{{ confirmation_token }}"
+                                    >
+                                      Confirm subscription
+                                    </a>
+                                  </p>
+                                  <p style="line-height: 24px; overflow-wrap: anywhere;">
+                                    <strong style="font-weight: bold">
+                                      Don't recognize this activity?
+                                    </strong>
+                                  </p>
+                                  <p style="line-height: 24px; overflow-wrap: anywhere;">
+                                    If you did not register an account with us,
+                                    simply disregard this email. We won't
+                                    contact you until you do.
+                                  </p>
+                                </td>
+                              </tr>
+                            </table>
+                          {% endblock %}

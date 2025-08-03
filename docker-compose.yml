@@ -1,0 +1,71 @@
+services:
+  py_api_db:
+    image: postgres:17-alpine
+    env_file: .env
+    environment:
+      POSTGRES_DB: py_api
+      POSTGRES_USER: py_api
+      POSTGRES_PASSWORD: dbpassword
+      PGPORT: 5433
+    expose:
+      - "5433"
+    ports:
+      - "5433:5433"
+    volumes:
+      - py_pg:/var/lib/postgresql/data
+    networks:
+      - diegoenriquezserrano_network
+    command: -p 5433
+  py-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "py_api_db"
+    env_file: .env
+    environment:
+      DATABASE_HOST: py_api_db
+    networks:
+      - diegoenriquezserrano_network
+    volumes:
+      - .:/py_api
+  py-meilisearch:
+    env_file: .env
+    image: "getmeili/meilisearch:v1.15"
+    expose:
+      - "7770"
+    ports:
+      - "7770:7770"
+    volumes:
+      - "py-meilisearch:/data.ms"
+  py-valkey:
+    env_file: .env
+    image: "valkey/valkey:8.0-alpine"
+    expose:
+      - "63792"
+    ports:
+      - "63792:63792"
+    volumes:
+      - "py-valkey:/data"
+    command: valkey-server --port ${VALKEY_PORT} --save 60 1 --loglevel ${VALKEY_LOG_LEVEL} --requirepass ${VALKEY_PASSWORD}
+  py-cache:
+    env_file: .env
+    image: "valkey/valkey:8.0-alpine"
+    expose:
+      - "63793"
+    ports:
+      - "63793:63793"
+    volumes:
+      - "py-cache:/data"
+    command: valkey-server --port ${VALKEY_CACHE_PORT} --save 60 1 --loglevel ${VALKEY_CACHE_LOG_LEVEL} --requirepass ${VALKEY_CACHE_PASSWORD}
+volumes:
+  py_pg:
+  py-valkey:
+  py-cache:
+  py-meilisearch:
+networks:
+  diegoenriquezserrano_network:
+    name: diegoenriquezserrano_network
+    driver: bridge

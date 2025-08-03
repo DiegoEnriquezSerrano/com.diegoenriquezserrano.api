@@ -1,0 +1,91 @@
+name: Django CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  ALLOWED_HOST_DEVELOPMENT: ${{ secrets.ALLOWED_HOST_DEVELOPMENT }}
+  ALLOWED_HOST_DOCKER: ${{ secrets.ALLOWED_HOST_DOCKER }}
+  ALLOWED_HOST_URL: ${{ secrets.ALLOWED_HOST_URL }}
+  AUTH_COOKIE_DOMAIN: ${{ secrets.AUTH_COOKIE_DOMAIN }}
+  AUTH_COOKIE_HTTP_ONLY: ${{ secrets.AUTH_COOKIE_HTTP_ONLY }}
+  AUTH_COOKIE_NAME: ${{ secrets.AUTH_COOKIE_NAME }}
+  AUTH_COOKIE_PATH: ${{ secrets.AUTH_COOKIE_PATH }}
+  AUTH_COOKIE_SAMESITE: ${{ secrets.AUTH_COOKIE_SAMESITE }}
+  AUTH_COOKIE_SECURE: ${{ secrets.AUTH_COOKIE_SECURE }}
+  CORS_ALLOWED_ORIGIN_CLIENT: ${{ secrets.CORS_ALLOWED_ORIGIN_CLIENT }}
+  DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
+  DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+  DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+  DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+  DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+  DEBUG: ${{ secrets.DEBUG }}
+  DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+  DJANGO_ENVIRONMENT: ${{ secrets.DJANGO_ENVIRONMENT }}
+  DJANGO_LOGLEVEL: ${{ secrets.DJANGO_LOGLEVEL }}
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+  MAILGUN_CNAME: ${{ secrets.MAILGUN_CNAME }}
+  MAILGUN_FROM_EMAIL: ${{ secrets.MAILGUN_FROM_EMAIL }}
+  MEILI_ENV: ${{ secrets.MEILI_ENV }}
+  MEILI_HTTP_ADDR: ${{ secrets.MEILI_HTTP_ADDR }}
+  MEILI_LOG_LEVEL: ${{ secrets.MEILI_LOG_LEVEL }}
+  MEILI_MASTER_KEY: ${{ secrets.MEILI_MASTER_KEY }}
+  MEILI_NO_ANALYTICS: ${{ secrets.MEILI_NO_ANALYTICS }}
+  POSTMARK_ACCOUNT_TOKEN: ${{ secrets.POSTMARK_ACCOUNT_TOKEN }}
+  POSTMARK_SERVER_TOKEN: ${{ secrets.POSTMARK_SERVER_TOKEN }}
+  POSTMARK_TEST_MODE: ${{ secrets.POSTMARK_TEST_MODE }}
+  POSTMARK_TIMEOUT: ${{ secrets.POSTMARK_TIMEOUT }}
+  POSTMARK_VERBOSITY: ${{ secrets.POSTMARK_VERBOSITY }}3
+  SERVER_EMAIL_DOMAIN: ${{ secrets.SERVER_EMAIL_DOMAIN }}
+  SERVER_EMAIL: ${{ secrets.SERVER_EMAIL }}
+  VALKEY_CACHE_IO_THREADS: ${{ secrets.VALKEY_CACHE_IO_THREADS }}
+  VALKEY_CACHE_LOG_LEVEL: ${{ secrets.VALKEY_CACHE_LOG_LEVEL }}
+  VALKEY_CACHE_PASSWORD: ${{ secrets.VALKEY_CACHE_PASSWORD }}
+  VALKEY_CACHE_PORT: ${{ secrets.VALKEY_CACHE_PORT }}
+  VALKEY_IO_THREADS: ${{ secrets.VALKEY_IO_THREADS }}
+  VALKEY_LOG_LEVEL: ${{ secrets.VALKEY_LOG_LEVEL }}
+  VALKEY_PASSWORD: ${{ secrets.VALKEY_PASSWORD }}
+  VALKEY_PORT: ${{ secrets.VALKEY_PORT }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: ${{ secrets.DATABASE_NAME }}
+          POSTGRES_HOST: ${{ secrets.DATABASE_HOST }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.DATABASE_USERNAME }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.12
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Tests
+        run: |
+          python manage.py test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install ruff
+        uses: astral-sh/ruff-action@v3
+      - name: Run linter
+        run: ruff check
+      - name: Run formatter
+        run: ruff format --check

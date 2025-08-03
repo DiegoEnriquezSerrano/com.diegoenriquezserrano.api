@@ -1,0 +1,5 @@
+Hello {{ name }},
+
+To complete your subscription to {{ username }}, copy and paste the following URL into your browser address bar:
+
+{{ client_url }}/subscription/confirmation/{{ confirmation_token }}
