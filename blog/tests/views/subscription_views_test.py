@@ -51,7 +51,6 @@ class SubscriptionTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Subscription.objects.filter(user=self.user).count(), 1)
-        print(response_json)
         self.assertEqual(
             Subscription.objects.get(id=response_json["id"]).email,
             "newsubscriber@company.com",
@@ -204,7 +203,7 @@ class SubscriptionTests(APITestCase):
         response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
-        self.assertEqual(response_json["message"], "confirmation token invalid")
+        self.assertEqual(response_json["confirmation_token"][0], "token is invalid")
 
     def test_user_cannot_use_unknown_subscription_confirmation_token(self):
         response = self.client.put(

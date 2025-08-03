@@ -46,6 +46,6 @@ class ConfirmationView(generics.UpdateAPIView):
             )
         else:
             return JsonResponse(
-                {"message": "confirmation token invalid"},
+                {"confirmation_token": ["token is invalid"]},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )

@@ -46,7 +46,7 @@ class ConfirmationViewTests(APITestCase):
         response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
-        self.assertEqual(response_json["message"], "confirmation token invalid")
+        self.assertEqual(response_json["confirmation_token"][0], "token is invalid")
 
     def test_user_cannot_use_unknown_token(self):
         response = self.client.put(

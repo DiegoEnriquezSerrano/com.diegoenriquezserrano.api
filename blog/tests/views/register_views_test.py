@@ -3,6 +3,7 @@ import os
 
 from django.http import HttpResponse
 from django.conf import settings
+from django.core.signing import TimestampSigner
 
 from unittest import mock
 
@@ -11,6 +12,7 @@ from rest_framework.test import APITestCase
 
 from blog.models.user import User
 from blog.tests.factories import UserFactory
+from blog.services.challenge_service import ChallengeService
 
 
 ok_response = HttpResponse(status=status.HTTP_200_OK)
@@ -18,16 +20,26 @@ ok_response = HttpResponse(status=status.HTTP_200_OK)
 
 class UserRegistrationTests(APITestCase):
     def setUp(self):
+        signer = TimestampSigner()
+        self.challenge = ChallengeService.generate_image_challenge()
+        self.challenge_answer = signer.unsign_object(self.challenge["signed_answer"])[
+            "code"
+        ]
         self.data = {
             "email": "testuser@example.com",
             "username": "testuser",
             "password": "testpassword",
             "password2": "testpassword",
+            "challenge_answer": self.challenge_answer,
+            "signed_answer": self.challenge["signed_answer"],
         }
 
     @mock.patch("blog.services.MailgunService.perform_send", return_value=ok_response)
     def test_user_registration_success(self, mock_postmark_client):
-        response = self.client.post("/user/register", self.data)
+        response = self.client.post(
+            "/user/register",
+            self.data,
+        )
         response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -89,11 +101,14 @@ class UserRegistrationTests(APITestCase):
             "username": "newuser",
             "password": "newpassword",
             "password2": "newpassword",
+            "challenge_answer": self.challenge_answer,
+            "signed_answer": self.challenge["signed_answer"],
         }
         response = self.client.post("/user/register", data)
+        response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("email", response.data)
+        self.assertIn("email", response_json)
 
     def test_user_registration_duplicate_username(self):
         UserFactory(email="testuser@example.com", username="testuser")
@@ -102,29 +117,41 @@ class UserRegistrationTests(APITestCase):
             "username": "testuser",
             "password": "newpassword",
             "password2": "newpassword",
+            "challenge_answer": self.challenge_answer,
+            "signed_answer": self.challenge["signed_answer"],
         }
         response = self.client.post("/user/register", data)
+        response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("username", response.data)
+        self.assertIn("username", response_json)
 
     def test_user_registration_missing_fields(self):
-        data = {"email": "testuser@example.com", "username": "testuser"}
+        data = {
+            "email": "testuser@example.com",
+            "username": "testuser",
+            "challenge_answer": self.challenge_answer,
+            "signed_answer": self.challenge["signed_answer"],
+        }
         response = self.client.post("/user/register", data)
+        response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("password", response.data)
+        self.assertIn("password", response_json)
 
     def test_user_registration_missing_second_password_fields(self):
         data = {
             "email": "testuser@example.com",
             "username": "testuser",
             "password": "testpassword",
+            "challenge_answer": self.challenge_answer,
+            "signed_answer": self.challenge["signed_answer"],
         }
         response = self.client.post("/user/register", data)
+        response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("password2", response.data)
+        self.assertIn("password2", response_json)
 
     def test_user_registration_invalid_email(self):
         data = {
@@ -132,8 +159,11 @@ class UserRegistrationTests(APITestCase):
             "username": "testuser",
             "password": "testpassword",
             "password2": "testpassword",
+            "challenge_answer": self.challenge_answer,
+            "signed_answer": self.challenge["signed_answer"],
         }
         response = self.client.post("/user/register", data)
+        response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("email", response.data)
+        self.assertIn("email", response_json)

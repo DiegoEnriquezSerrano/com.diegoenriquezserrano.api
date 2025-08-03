@@ -26,7 +26,7 @@ class SubscriptionCreateAPIView(generics.CreateAPIView):
 
         if not challenge.is_valid():
             return JsonResponse(
-                {"error": "Invalid captcha"},
+                {"captcha": ["Invalid captcha"]},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
@@ -82,6 +82,6 @@ class SubscriptionConfirmationUpdateAPIView(generics.UpdateAPIView):
             )
         else:
             return JsonResponse(
-                {"message": "confirmation token invalid"},
+                {"confirmation_token": ["token is invalid"]},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
