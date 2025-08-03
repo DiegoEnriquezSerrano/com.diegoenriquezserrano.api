@@ -32,4 +32,9 @@ class CustomAuthentication(JWTAuthentication):
 
         # enforce_csrf(request)
 
+        user = self.get_user(validated_token)
+
+        if not user.confirmed:
+            return None
+
         return self.get_user(validated_token), validated_token
