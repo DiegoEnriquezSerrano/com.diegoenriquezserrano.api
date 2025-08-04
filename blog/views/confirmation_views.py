@@ -16,9 +16,8 @@ class ConfirmationView(generics.UpdateAPIView):
     permission_classes = [AllowAny]
 
     def get_object(self):
-        unsigned_token = ConfirmationService.attempt_token_unsign(
-            self.kwargs["signed_confirmation_token"]
-        )
+        url_decoded_token = self.kwargs["signed_confirmation_token"].replace("%3A", ":")
+        unsigned_token = ConfirmationService.attempt_token_unsign(url_decoded_token)
 
         return get_object_or_404(
             User,
@@ -26,9 +25,8 @@ class ConfirmationView(generics.UpdateAPIView):
         )
 
     def get_queryset(self):
-        unsigned_token = ConfirmationService.attempt_token_unsign(
-            self.kwargs["signed_confirmation_token"]
-        )
+        url_decoded_token = self.kwargs["signed_confirmation_token"].replace("%3A", ":")
+        unsigned_token = ConfirmationService.attempt_token_unsign(url_decoded_token)
 
         return get_object_or_404(
             User,

@@ -1,7 +1,6 @@
 import json
 import os
-
-from unittest import mock
+import urllib.parse
 
 from django.conf import settings
 from django.core.signing import TimestampSigner
@@ -12,9 +11,11 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.test import APITestCase
 
+from unittest import mock
+
 from blog.models import Subscription
-from blog.tests.factories import UserFactory, SubscriptionFactory
 from blog.services.challenge_service import ChallengeService
+from blog.tests.factories import UserFactory, SubscriptionFactory
 
 ok_response = HttpResponse(status=status.HTTP_200_OK)
 
@@ -181,7 +182,7 @@ class SubscriptionTests(APITestCase):
 
     def test_user_can_confirm_subscription_with_valid_token(self):
         response = self.client.put(
-            f"/subscription/confirmation/{self.signed_token}",
+            f"/subscription/confirmation/{urllib.parse.quote(self.signed_token)}",
             format="json",
         )
         response_json = json.loads(response.content)
@@ -197,7 +198,7 @@ class SubscriptionTests(APITestCase):
         self.subscription.save()
 
         response = self.client.put(
-            f"/subscription/confirmation/{self.signed_token}",
+            f"/subscription/confirmation/{urllib.parse.quote(self.signed_token)}",
             format="json",
         )
         response_json = json.loads(response.content)
