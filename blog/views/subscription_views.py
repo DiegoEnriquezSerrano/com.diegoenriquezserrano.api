@@ -22,7 +22,7 @@ class SubscriptionCreateAPIView(generics.CreateAPIView):
     serializer_class = SubscriptionSerializer
 
     def post(self, request, *args, **kwargs):
-        challenge = ChallengeImageSerializer(data={**request.data})
+        challenge = ChallengeImageSerializer(data=request.data)
 
         if not challenge.is_valid():
             return JsonResponse(
@@ -52,9 +52,8 @@ class SubscriptionConfirmationUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [AllowAny]
 
     def get_object(self):
-        unsigned_token = ConfirmationService.attempt_token_unsign(
-            self.kwargs["signed_confirmation_token"]
-        )
+        url_decoded_token = self.kwargs["signed_confirmation_token"].replace("%3A", ":")
+        unsigned_token = ConfirmationService.attempt_token_unsign(url_decoded_token)
 
         return get_object_or_404(
             Subscription,
@@ -62,9 +61,8 @@ class SubscriptionConfirmationUpdateAPIView(generics.UpdateAPIView):
         )
 
     def get_queryset(self):
-        unsigned_token = ConfirmationService.attempt_token_unsign(
-            self.kwargs["signed_confirmation_token"]
-        )
+        url_decoded_token = self.kwargs["signed_confirmation_token"].replace("%3A", ":")
+        unsigned_token = ConfirmationService.attempt_token_unsign(url_decoded_token)
 
         return get_object_or_404(
             Subscription,
