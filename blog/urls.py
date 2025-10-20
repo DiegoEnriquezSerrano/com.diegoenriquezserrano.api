@@ -133,6 +133,11 @@ urlpatterns = [
         name="dashboard_posts_path",
     ),
     path(
+        "dashboard/post_drafts",
+        blog_views.DashboardPostDraftListAPIView.as_view(),
+        name="dashboard_draft_posts_path",
+    ),
+    path(
         "dashboard/categories/<category_slug>/posts",
         blog_views.DashboardCategoryPostListAPIView.as_view(),
         name="dashboard_category_posts_path",
