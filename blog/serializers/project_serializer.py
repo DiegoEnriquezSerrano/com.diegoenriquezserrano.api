@@ -1,3 +1,6 @@
+from marko import Markdown, Parser
+from marko.md_renderer import MarkdownRenderer
+
 from rest_framework import serializers
 
 from blog.models import Project, User
@@ -47,3 +50,12 @@ class CreateProjectSerializer(serializers.ModelSerializer):
             "url",
             "user",
         ]
+
+    def validate(self, data):
+        if data.get("body") is not None:
+            md_to_md = Markdown(renderer=MarkdownRenderer)
+            self.body = md_to_md(data.get("body"))
+
+        super().validate(data)
+
+        return data
