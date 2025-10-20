@@ -25,6 +25,7 @@ class PostSerializer(serializers.ModelSerializer):
             "cover_image_url",
             "created_on",
             "description",
+            "draft",
             "excerpt",
             "featured",
             "last_modified",
@@ -33,14 +34,6 @@ class PostSerializer(serializers.ModelSerializer):
             "title",
             "user",
         ]
-
-    def __init__(self, *args, **kwargs):
-        super(PostSerializer, self).__init__(*args, **kwargs)
-        request = self.context.get("request")
-        if request and request.method == "POST":
-            self.Meta.depth = 0
-        else:
-            self.Meta.depth = 1
 
     def get_profile(self, post):
         return post.user.profile
@@ -67,7 +60,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        self.slug = slugify(data["title"])
+        self.slug = slugify(data.get("title"))
 
         super().validate(data)
 

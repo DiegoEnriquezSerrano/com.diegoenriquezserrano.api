@@ -35,6 +35,7 @@ from .authenticated.post_views import (
     DashboardPostRetrieveUpdateDestroyAPIView as DashboardPostRetrieveUpdateDestroyAPIView,
     PostLikeCreateAPIView as PostLikeCreateAPIView,
     DashboardCategoryPostListAPIView as DashboardCategoryPostListAPIView,
+    DashboardPostDraftListAPIView as DashboardPostDraftListAPIView,
 )
 
 from .authenticated.project_views import (
