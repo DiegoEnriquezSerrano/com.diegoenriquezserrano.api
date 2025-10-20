@@ -33,6 +33,15 @@ class DashboardPostListCreateAPIView(generics.ListCreateAPIView):
 
 
 @method_decorator(require_GET, name="get")
+class DashboardPostDraftListAPIView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Post.objects.filter(user=self.request.user, draft=True).order_by("-id")
+
+
+@method_decorator(require_GET, name="get")
 class DashboardCategoryPostListAPIView(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
