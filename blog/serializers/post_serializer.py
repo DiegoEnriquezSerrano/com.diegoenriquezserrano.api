@@ -1,6 +1,6 @@
 from django.utils.text import slugify
 
-from marko import Markdown, Parser
+from marko import Markdown
 from marko.md_renderer import MarkdownRenderer
 
 from rest_framework import serializers
