@@ -127,7 +127,7 @@ class AuthenticatedPostTests(APITestCase):
     def test_authenticated_user_can_list_drafts(self):
         category = CategoryFactory(user=self.user)
         post = PostFactory.create(user=self.user, categories=[category], draft=True)
-        response = self.client.get(f"/dashboard/post_drafts", format="json")
+        response = self.client.get("/dashboard/post_drafts", format="json")
         response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
