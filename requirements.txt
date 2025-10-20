@@ -21,6 +21,7 @@ Faker==37.4.0
 gunicorn==23.0.0
 idna==3.10
 kombu==5.5.4
+marko==2.2.0
 packaging==25.0
 pillow==11.3.0
 postmarker==1.0

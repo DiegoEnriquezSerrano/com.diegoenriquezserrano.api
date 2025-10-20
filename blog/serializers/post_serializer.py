@@ -1,5 +1,8 @@
 from django.utils.text import slugify
 
+from marko import Markdown
+from marko.md_renderer import MarkdownRenderer
+
 from rest_framework import serializers
 
 from blog.models import Post, Category, User
@@ -61,6 +64,10 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         self.slug = slugify(data.get("title"))
+
+        if data.get("body") is not None:
+            md_to_md = Markdown(renderer=MarkdownRenderer)
+            self.body = md_to_md(data.get("body"))
 
         super().validate(data)
 
