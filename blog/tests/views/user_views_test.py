@@ -14,3 +14,8 @@ class UserTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_json["username"], user.username)
+
+    def test_non_existing_user_returns_not_found(self):
+        response = self.client.get("/user/profile/nunya", format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
