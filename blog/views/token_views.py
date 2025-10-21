@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 
@@ -25,14 +26,8 @@ class BlogTokenObtainPairView(TokenObtainPairView):
             {"message": "authentication ok"}, status=status.HTTP_200_OK
         )
         response.set_cookie(
-            key="access_token",
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
             value=serializer.validated_data["access"],
-            httponly=True,
-            samesite="Lax",
-        )
-        response.set_cookie(
-            key="refresh_token",
-            value=serializer.validated_data["refresh"],
             httponly=True,
             samesite="Lax",
         )

@@ -1,5 +1,7 @@
 import json
 
+from django.conf import settings
+
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.test import APITestCase
@@ -101,9 +103,9 @@ class CategoryTests(APITestCase):
 class AuthenticatedCategoryTests(APITestCase):
     def setUp(self):
         self.user = UserFactory()
-        refresh = RefreshToken.for_user(self.user)
-        access_token = refresh.access_token
-        self.client.cookies["access_token"] = access_token
+        self.client.cookies[settings.SIMPLE_JWT["AUTH_COOKIE"]] = RefreshToken.for_user(
+            self.user
+        ).access_token
 
     def test_authenticated_user_can_create_category(self):
         response = self.client.post(

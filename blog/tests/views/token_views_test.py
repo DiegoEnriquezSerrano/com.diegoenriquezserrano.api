@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.utils import timezone
 
 from rest_framework import status
@@ -27,8 +28,7 @@ class BlogTokenObtainPairViewTests(APITestCase):
         response_json = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("access_token", response.cookies)
-        self.assertIn("refresh_token", response.cookies)
+        self.assertIn(settings.SIMPLE_JWT["AUTH_COOKIE"], response.cookies)
         self.assertEqual(response_json["message"], "authentication ok")
 
     def test_obtain_token_pair_invalid_credentials(self):
@@ -38,8 +38,7 @@ class BlogTokenObtainPairViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertNotIn("access_token", response.cookies)
-        self.assertNotIn("refresh_token", response.cookies)
+        self.assertNotIn(settings.SIMPLE_JWT["AUTH_COOKIE"], response.cookies)
 
     def test_obtain_token_pair_missing_fields(self):
         response = self.client.post("/user/token", {"email": "testuser@example.com"})
@@ -47,8 +46,7 @@ class BlogTokenObtainPairViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response_json)
-        self.assertNotIn("access_token", response.cookies)
-        self.assertNotIn("refresh_token", response.cookies)
+        self.assertNotIn(settings.SIMPLE_JWT["AUTH_COOKIE"], response.cookies)
 
     def test_obtain_token_pair_invalid_username(self):
         response = self.client.post(
@@ -57,5 +55,4 @@ class BlogTokenObtainPairViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertNotIn("access_token", response.cookies)
-        self.assertNotIn("refresh_token", response.cookies)
+        self.assertNotIn(settings.SIMPLE_JWT["AUTH_COOKIE"], response.cookies)
