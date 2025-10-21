@@ -1,0 +1,64 @@
+services:
+  py-postgres:
+    image: postgres:17-alpine
+    env_file: .env
+    networks:
+      - dokploy-network
+    ports:
+      - 5433
+    volumes:
+      - py-postgres:/var/lib/postgresql/data
+  py-api:
+    build:
+      context: ./py-api
+      dockerfile: Dockerfile.production
+    depends_on:
+      - py-postgres
+    env_file: .env
+    networks:
+      - dokploy-network
+    ports:
+      - 8000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.py-api.rule=Host(`api.diegoenriquezserrano.cloud`)"
+      - "traefik.http.routers.py-api.entrypoints=websecure"
+      - "traefik.http.routers.py-api.tls.certResolver=letsencrypt"
+      - "traefik.http.services.py-api.loadbalancer.server.port=8000"
+  py-meilisearch:
+    env_file: .env
+    image: getmeili/meilisearch:v1.15
+    networks:
+      - dokploy-network
+    ports:
+      - 7770
+    volumes:
+      - py-meilisearch:/data.ms
+  py-valkey:
+    command: valkey-server --port ${VALKEY_PORT} --save 60 1 --loglevel ${VALKEY_LOG_LEVEL} --requirepass ${VALKEY_PASSWORD}
+    env_file: .env
+    image: valkey/valkey:8.0-alpine
+    networks:
+      - dokploy-network
+    ports:
+      - 63792
+    volumes:
+      - py-valkey:/data
+  py-cache:
+    command: valkey-server --port ${VALKEY_CACHE_PORT} --save 60 1 --loglevel ${VALKEY_CACHE_LOG_LEVEL} --requirepass ${VALKEY_CACHE_PASSWORD}
+    env_file: .env
+    image: valkey/valkey:8.0-alpine
+    networks:
+      - dokploy-network
+    ports:
+      - 63793
+    volumes:
+      - py-cache:/data
+volumes:
+  py-postgres:
+  py-valkey:
+  py-cache:
+  py-meilisearch:
+networks:
+  dokploy-network:
+    external: true
