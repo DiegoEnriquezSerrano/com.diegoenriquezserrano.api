@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
 
@@ -15,6 +16,6 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         username = self.kwargs.get("username")
-        profile = Profile.objects.get(user__username=username)
+        profile = get_object_or_404(Profile, user__username=username)
 
         return profile
