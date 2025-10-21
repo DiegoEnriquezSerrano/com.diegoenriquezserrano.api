@@ -32,7 +32,7 @@ if DJANGO_ENVIRONMENT == "development":
         os.getenv("ALLOWED_HOST_DEVELOPMENT"),
     ]
 else:
-    ALLOWED_HOSTS = [os.getenv("ALLOWED_HOST_URL")]
+    ALLOWED_HOSTS = [os.getenv("ALLOWED_HOST_URL"), os.getenv("ALLOWED_HOST_SERVER")]
 
 
 INSTALLED_APPS = [
