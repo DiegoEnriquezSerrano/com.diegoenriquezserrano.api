@@ -15,8 +15,6 @@ class AuthenticatedProfileTests(APITestCase):
         self.client.cookies[settings.SIMPLE_JWT["AUTH_COOKIE"]] = RefreshToken.for_user(
             self.user
         ).access_token
-        self.user.confirmed = False
-        self.user.confirmed_at = None
         self.user.save()
 
     def test_authenticated_user_can_retrieve_profile(self):
