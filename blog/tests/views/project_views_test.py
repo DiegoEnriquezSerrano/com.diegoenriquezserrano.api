@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.utils import timezone
 
 from rest_framework import status
@@ -71,9 +72,9 @@ class ProjectTests(APITestCase):
 class AuthenticatedProjectTests(APITestCase):
     def setUp(self):
         self.user = UserFactory()
-        refresh = RefreshToken.for_user(self.user)
-        access_token = refresh.access_token
-        self.client.cookies["access_token"] = access_token
+        self.client.cookies[settings.SIMPLE_JWT["AUTH_COOKIE"]] = RefreshToken.for_user(
+            self.user
+        ).access_token
 
     def test_authenticated_user_can_list_projects(self):
         project = ProjectFactory.create(user=self.user)

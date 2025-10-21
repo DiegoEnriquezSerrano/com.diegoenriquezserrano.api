@@ -1,5 +1,7 @@
 import json
 
+from django.conf import settings
+
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.test import APITestCase
@@ -11,9 +13,9 @@ from blog.tests.factories import CategoryFactory, PostFactory, UserFactory
 class AuthenticatedPostTests(APITestCase):
     def setUp(self):
         self.user = UserFactory()
-        refresh = RefreshToken.for_user(self.user)
-        access_token = refresh.access_token
-        self.client.cookies["access_token"] = access_token
+        self.client.cookies[settings.SIMPLE_JWT["AUTH_COOKIE"]] = RefreshToken.for_user(
+            self.user
+        ).access_token
 
     def test_authenticated_user_can_list_posts(self):
         category = CategoryFactory(user=self.user)

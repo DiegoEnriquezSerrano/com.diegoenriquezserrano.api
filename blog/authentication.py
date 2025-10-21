@@ -37,4 +37,4 @@ class CustomAuthentication(JWTAuthentication):
         if not user.confirmed:
             return None
 
-        return self.get_user(validated_token), validated_token
+        return user, validated_token
