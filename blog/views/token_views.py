@@ -26,9 +26,15 @@ class BlogTokenObtainPairView(TokenObtainPairView):
             {"message": "authentication ok"}, status=status.HTTP_200_OK
         )
         response.set_cookie(
+            domain=settings.SIMPLE_JWT["AUTH_COOKIE_DOMAIN"],
+            expires=None,
+            httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
             key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            max_age=None,
+            path=settings.SIMPLE_JWT["AUTH_COOKIE_PATH"],
+            samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+            secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
             value=serializer.validated_data["access"],
-            httponly=True,
-            samesite="Lax",
         )
+
         return response
