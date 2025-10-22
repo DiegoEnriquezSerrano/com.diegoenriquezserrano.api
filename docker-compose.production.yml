@@ -37,6 +37,7 @@ services:
     volumes:
       - py-meilisearch:/data.ms
   py-valkey:
+    command: valkey-server --port ${VALKEY_PORT} --save 60 1 --loglevel ${VALKEY_LOG_LEVEL} --requirepass ${VALKEY_PASSWORD}
     env_file: .env
     image: valkey/valkey:8.0-alpine
     networks:
@@ -46,6 +47,7 @@ services:
     volumes:
       - py-valkey:/data
   py-cache:
+    command: valkey-server --port ${VALKEY_CACHE_PORT} --save 60 1 --loglevel ${VALKEY_CACHE_LOG_LEVEL} --requirepass ${VALKEY_CACHE_PASSWORD}
     env_file: .env
     image: valkey/valkey:8.0-alpine
     networks:
