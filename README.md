@@ -1,3 +1,8 @@
+> [!WARNING]
+> This repository will become inactive as of May 14, 2026.
+> Future project maintenance will be tracked [here](https://codeberg.org/diegoenriquezserrano/com.diegoenriquezserrano.api)
+
+
 # com.diegoenriquezserrano.api
 
 [![Django CI](https://github.com/DiegoEnriquezSerrano/com.diegoenriquezserrano.api/actions/workflows/ci.yml/badge.svg)](https://github.com/DiegoEnriquezSerrano/com.diegoenriquezserrano.api/actions/workflows/ci.yml)
